@@ -38,4 +38,24 @@ public class ArrayAlg {
 
         return smallest;
     }
+
+    /**
+     * 如果这样定义，那么 LocalDate 使用不了，
+     * 因为LocalDate implements ChronoLocalDate ，而 ChronoLocalDate implements Comparable <ChronoLocalDate>
+     * 所以相当于 LocalDate implements Comparable <ChronoLocalDate>，不符合泛型条件
+     *
+     * @param a
+     * @param <T>
+     * @return
+     */
+    public static <T extends Comparable<T>> T minmax(T[] a) {
+        return null;
+    }
+
+    public static <T extends Comparable<? super T>> T newMinMax(T[] a) {
+        return null;
+    }
+
 }
+
+

@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Array;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -144,5 +145,41 @@ public class ArrayAlgTest {
         // ArrayList<Dog> arrayList = new ArrayList<>();
         // list = arrayList;
     }
+
+    @Test
+    public void testWildcardType() {
+        Pair<Dog> dogPair = new Pair<>(new Dog(), new Dog());
+        Pair<? extends Animal> pair = dogPair;
+        // 因为上限是Animal，所以肯定取出来赋值给 Animal ，所以 extends 可以get，不可以set
+        Animal first = pair.getFirst();
+        // compile error, param type is (capture of ? extends Animal)，
+        // 只知道是Animal的一个捕获类型，不知道具体什么类型，所以不能set
+        // pair.setFirst();
+
+        Pair<? super Animal> superAnimal = new Pair<>();
+        // compile error，param type is (capture<? super cn.ykf.model.Animal>)
+        // 因为下限是 Animal，所以只知道是 Animal 的一种父类型，但是具体是什么类型编译器也不知道
+        // 所以不能set  Object
+        // superAnimal.setFirst(new Object());
+        // get也只能赋值给Object，毕竟不知道具体类型
+        Object first1 = superAnimal.getFirst();
+        // 但是可以set一个子类型，因为下限是Animal，所以只要传的是Animal的子类，那么Animal可以接收，Animal的父类更加可以接受了
+        superAnimal.setFirst(new Dog());
+    }
+
+    @Test
+    public void testSuper() {
+        // Incompatible types.Required LocalDate but 'minmax' was inferred to T:
+        // no instance(s) of type variable(s) exist so that ChronoLocalDate conforms to LocalDate
+        // 不能直接赋值给 LocalDate，因为LocalDate 实现的是 Comparable<ChronoLocalDate> 不符合通配符条件
+        // LocalDate minmax = ArrayAlg.minmax(new LocalDate[]{LocalDate.now()});
+        // 合理利用限定符
+        LocalDate localDate = ArrayAlg.newMinMax(new LocalDate[]{LocalDate.now()});
+
+        Pair<?> pair = new Pair<>();
+        // 只能set null
+        pair.setFirst(null);
+    }
+
 }
 
