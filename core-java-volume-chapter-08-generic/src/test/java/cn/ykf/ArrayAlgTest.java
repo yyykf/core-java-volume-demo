@@ -1,9 +1,12 @@
 package cn.ykf;
 
+import cn.ykf.model.Animal;
+import cn.ykf.model.Dog;
 import cn.ykf.model.Pair;
 import cn.ykf.util.ArrayAlg;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -118,6 +121,28 @@ public class ArrayAlgTest {
         T[] mm1 = (T[]) Array.newInstance(a.getClass().getComponentType(), a.length);
 
         return mm;
+    }
+
+    @Test
+    public void testExtends() {
+        // class cn.ykf.model.Dog
+        Pair<Animal> pair = new Pair<>(new Dog(), new Dog());
+        System.out.println(pair.getFirst().getClass());
+        // 转成原始类型
+        Pair pair1 = pair;
+        pair1.setFirst(new File("1"));
+        // class java.io.File
+        System.out.println(pair1.getFirst().getClass());
+        // java.lang.ClassCastException: java.io.File cannot be cast to cn.ykf.model.Animal
+        System.out.println(pair.getFirst().getClass());
+
+        List<Animal> list = new ArrayList<>();
+        // 允许
+        ArrayList<Animal> arrayList = new ArrayList<>();
+        list = arrayList;
+        // 不允许，泛型的关系和原始类型无关
+        // ArrayList<Dog> arrayList = new ArrayList<>();
+        // list = arrayList;
     }
 }
 
