@@ -11,6 +11,7 @@
     <description>Java 核心卷相关 Demo</description>
     <modules>
         <module>core-java-volume-chapter-08-generic</module>
+        <module>core-java-volume-chapter-05-extends</module>
     </modules>
 
     <!-- 仓库配置 -->
