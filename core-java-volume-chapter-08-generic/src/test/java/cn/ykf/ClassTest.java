@@ -112,4 +112,22 @@ public class ClassTest {
 
     private <K, V> void apply(Map.Entry<K, V> entry) {
     }
+
+
+    @Test
+    public void testInvokeMethod() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        // 反射调用静态方法时，隐式参数为null
+        Method fun = ClassTest.class.getDeclaredMethod("fun");
+        // 返回值是基本类型的，会包装为包装类型，利用自动拆箱获取基本类型返回值
+        double invoke = (Double) fun.invoke(null);
+        // java.lang.ClassCastException: java.lang.Double cannot be cast to java.lang.String
+        // String invoke = (String)fun.invoke(null);
+
+        System.out.println(invoke);
+
+    }
+
+    private static double fun() {
+        return 1.0;
+    }
 }
