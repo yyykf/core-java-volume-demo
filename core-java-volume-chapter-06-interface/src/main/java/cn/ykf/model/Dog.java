@@ -7,4 +7,7 @@ import cn.ykf.service.MyInterface;
  * @date 2020-09-25
  */
 public class Dog extends Animal implements MyInterface {
+    public Dog(String name) {
+        super(name);
+    }
 }
