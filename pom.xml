@@ -14,6 +14,7 @@
         <module>core-java-volume-chapter-05-extends</module>
         <module>core-java-volume-chapter-06-interface</module>
         <module>core-java-volume-chapter-07-exception</module>
+        <module>core-java-volume-chapter-09-collection</module>
     </modules>
 
     <!-- 仓库配置 -->
