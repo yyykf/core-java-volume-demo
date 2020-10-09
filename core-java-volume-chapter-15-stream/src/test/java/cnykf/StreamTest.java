@@ -61,6 +61,20 @@ public class StreamTest {
         Stream.concat(l1, l2).skip(1).forEach(System.out::println);
     }
 
+    /**
+     * 将字符串分解为单个字符
+     *
+     * @param s 字符串
+     * @return 含有字符串的所有字符的Stream流
+     */
+    private Stream<String> letters(String s) {
+        List<String> result = new ArrayList<>();
+        for (int i = 0; i < s.length(); i++) {
+            result.add(s.substring(i, i + 1));
+        }
+        return result.stream();
+    }
+
     @Test
     public void testPeek() {
         // 在每次获取一个元素时，都会调用peek中的函数，这里不加count，没有对流中的元素进行操作，所以不会打印，也就是惰性处理
@@ -84,17 +98,24 @@ public class StreamTest {
         System.out.println(existed);
     }
 
+    @Test
+    public void testFlatMapWithOptional() {
+        System.out.println(Optional.of(-4.0).flatMap(this::inverse).flatMap(this::squareRoot));
+        System.out.println(Optional.of(4.0).flatMap(this::inverse).flatMap(this::squareRoot).flatMap(this::inverse));
+        System.out.println(Optional.of(0.0).flatMap(this::inverse).flatMap(this::squareRoot));
+    }
+
     /**
-     * 将字符串分解为单个字符
-     *
-     * @param s 字符串
-     * @return 含有字符串的所有字符的Stream流
+     * 求倒数
      */
-    private Stream<String> letters(String s) {
-        List<String> result = new ArrayList<>();
-        for (int i = 0; i < s.length(); i++) {
-            result.add(s.substring(i, i + 1));
-        }
-        return result.stream();
+    private Optional<Double> inverse(Double x) {
+        return x == 0 ? Optional.empty() : Optional.of(1 / x);
+    }
+
+    /**
+     * 求平方根
+     */
+    private Optional<Double> squareRoot(Double x) {
+        return x < 0 ? Optional.empty() : Optional.of(Math.sqrt(x));
     }
 }
