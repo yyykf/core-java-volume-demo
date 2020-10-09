@@ -1,9 +1,11 @@
-package cnykf;
+package cn.ykf;
 
+import cn.ykf.model.Person;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -147,5 +149,44 @@ public class StreamTest {
         System.out.println(summary.getMax());
         System.out.println(summary.getMin());
 
+    }
+
+    @Test
+    public void testToMap() {
+        Person zs = new Person("1", "zhangsan");
+        Person ls = new Person("2", "lisi");
+        Person ww = new Person("2", "wangwu");
+
+        // key为id，value为自身， Function.identity的用处
+        Map<String, Person> m1 = Stream.of(zs, ls).collect(Collectors.toMap(Person::getId, Function.identity()));
+        m1.forEach((k, v) -> {
+            System.out.println("key: " + k + ", value: " + v);
+        });
+
+        System.out.println("----------------");
+
+        // 解决冲突，这里选择保留后者
+        Map<String, Person> m2 = Stream.of(zs, ls, ww)
+                .collect(Collectors.toMap(Person::getId, Function.identity(), (oldPerson, newPerson) -> newPerson));
+        m2.forEach((k, v) -> {
+            System.out.println("key: " + k + ", value: " + v);
+        });
+
+        System.out.println("----------------");
+
+        // 如果需要特定类型，还可以传入构造器参数
+        Map<String, Set<String>> map = Stream.of(Locale.getAvailableLocales())
+                .collect(Collectors.toMap(Locale::getDisplayCountry,
+                        locale -> Collections.singleton(locale.getDisplayLanguage()),
+                        (a, b) -> {
+                            // 并集
+                            Set<String> union = new HashSet<>(a);
+                            union.addAll(b);
+                            return union;
+                        }));
+
+        map.forEach((k, v) -> {
+            System.out.println("key: " + k + ", value: " + v);
+        });
     }
 }
