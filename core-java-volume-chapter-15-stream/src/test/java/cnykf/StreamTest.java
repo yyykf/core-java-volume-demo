@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -117,5 +118,34 @@ public class StreamTest {
      */
     private Optional<Double> squareRoot(Double x) {
         return x < 0 ? Optional.empty() : Optional.of(Math.sqrt(x));
+    }
+
+    @Test
+    public void testCollect() {
+        // 无法运行时直接创建泛型数组，所以不带参数时默认是Object[]
+        // 如果需要泛型，那么需要使用数组构造器
+        String[] source = {"a", "B", "c"};
+        String[] strings = Stream.of(source).toArray(String[]::new);
+        for (String string : strings) {
+            System.out.println(string);
+        }
+
+        // 收集器，可以指定特定集合类型
+        TreeSet<String> treeSet = Stream.of(source).collect(Collectors.toCollection(TreeSet::new));
+        System.out.println(treeSet);
+
+        // 可以连接流中的元素
+        System.out.println(Stream.of(source).collect(Collectors.joining()));
+        // 可以使用分隔符
+        System.out.println(Stream.of(source).collect(Collectors.joining(",")));
+
+        // 计算总和、最值等
+        IntSummaryStatistics summary = Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).collect(Collectors.summarizingInt(Integer::intValue));
+        System.out.println(summary.getSum());
+        System.out.println(summary.getCount());
+        System.out.println(summary.getAverage());
+        System.out.println(summary.getMax());
+        System.out.println(summary.getMin());
+
     }
 }
