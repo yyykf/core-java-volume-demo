@@ -6,8 +6,9 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.*;
 
 /**
  * @author YuKaiFan <1092882580@qq.com>
@@ -133,16 +134,16 @@ public class StreamTest {
         }
 
         // 收集器，可以指定特定集合类型
-        TreeSet<String> treeSet = Stream.of(source).collect(Collectors.toCollection(TreeSet::new));
+        TreeSet<String> treeSet = Stream.of(source).collect(toCollection(TreeSet::new));
         System.out.println(treeSet);
 
         // 可以连接流中的元素
-        System.out.println(Stream.of(source).collect(Collectors.joining()));
+        System.out.println(Stream.of(source).collect(joining()));
         // 可以使用分隔符
-        System.out.println(Stream.of(source).collect(Collectors.joining(",")));
+        System.out.println(Stream.of(source).collect(joining(",")));
 
         // 计算总和、最值等
-        IntSummaryStatistics summary = Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).collect(Collectors.summarizingInt(Integer::intValue));
+        IntSummaryStatistics summary = Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).collect(summarizingInt(Integer::intValue));
         System.out.println(summary.getSum());
         System.out.println(summary.getCount());
         System.out.println(summary.getAverage());
@@ -158,7 +159,7 @@ public class StreamTest {
         Person ww = new Person("2", "wangwu");
 
         // key为id，value为自身， Function.identity的用处
-        Map<String, Person> m1 = Stream.of(zs, ls).collect(Collectors.toMap(Person::getId, Function.identity()));
+        Map<String, Person> m1 = Stream.of(zs, ls).collect(toMap(Person::getId, Function.identity()));
         m1.forEach((k, v) -> {
             System.out.println("key: " + k + ", value: " + v);
         });
@@ -167,16 +168,14 @@ public class StreamTest {
 
         // 解决冲突，这里选择保留后者
         Map<String, Person> m2 = Stream.of(zs, ls, ww)
-                .collect(Collectors.toMap(Person::getId, Function.identity(), (oldPerson, newPerson) -> newPerson));
-        m2.forEach((k, v) -> {
-            System.out.println("key: " + k + ", value: " + v);
-        });
+                .collect(toMap(Person::getId, Function.identity(), (oldPerson, newPerson) -> newPerson));
+        m2.forEach((k, v) -> System.out.println("key: " + k + ", value: " + v));
 
         System.out.println("----------------");
 
         // 如果需要特定类型，还可以传入构造器参数
         Map<String, Set<String>> map = Stream.of(Locale.getAvailableLocales())
-                .collect(Collectors.toMap(Locale::getDisplayCountry,
+                .collect(toMap(Locale::getDisplayCountry,
                         locale -> Collections.singleton(locale.getDisplayLanguage()),
                         (a, b) -> {
                             // 并集
@@ -185,8 +184,36 @@ public class StreamTest {
                             return union;
                         }));
 
-        map.forEach((k, v) -> {
-            System.out.println("key: " + k + ", value: " + v);
-        });
+        map.forEach((k, v) -> System.out.println("key: " + k + ", value: " + v));
+    }
+
+    @Test
+    public void testGroupBy() {
+        // 根据国家代码分类
+        Map<String, List<Locale>> m1 = Stream.of(Locale.getAvailableLocales())
+                .collect(groupingBy(Locale::getCountry));
+        m1.forEach((k, v) -> System.out.println("key: " + k + ", value: " + v));
+
+        System.out.println("---------------------");
+
+        // 根据是否使用英语进行分类
+        Map<Boolean, List<Locale>> m2 = Stream.of(Locale.getAvailableLocales())
+                .collect(partitioningBy(locale -> locale.getLanguage().equals("en")));
+        m2.forEach((k, v) -> System.out.println("key: " + k + ", value: " + v));
+
+        System.out.println("---------------------");
+
+        // 使用mapping对下游元素进行处理
+        Map<String, Set<Locale>> m3 = Stream.of(Locale.getAvailableLocales())
+                .collect(groupingBy(Locale::getDisplayCountry, toSet()));
+        m3.forEach((k, v) -> System.out.println("key: " + k + ", value: " + v));
+
+        System.out.println("---------------------");
+
+        // 分组后，对每组的下游元素的语言进行比较，取长度最长的
+        Map<String, Optional<String>> m4 = Stream.of(Locale.getAvailableLocales())
+                .collect(groupingBy(Locale::getDisplayCountry,
+                        mapping(Locale::getDisplayLanguage, maxBy(Comparator.comparing(String::length)))));
+        m4.forEach((k, v) -> System.out.println("key: " + k + ", value: " + v));
     }
 }
