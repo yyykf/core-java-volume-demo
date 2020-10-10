@@ -16,6 +16,7 @@
         <module>core-java-volume-chapter-07-exception</module>
         <module>core-java-volume-chapter-09-collection</module>
         <module>core-java-volume-chapter-15-stream</module>
+        <module>core-java-volume-chapter-16-io</module>
     </modules>
 
     <!-- 仓库配置 -->
