@@ -33,6 +33,7 @@ public class SerializationTest {
 
     /**
      * 把对象写入序列化到文件后反序列化回来
+     * 实际上实现了深拷贝(deep copy)
      *
      * @param fileName 待保存的文件名称
      * @param oldObj   待序列化对象
