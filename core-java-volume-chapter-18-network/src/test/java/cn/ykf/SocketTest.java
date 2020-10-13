@@ -1,5 +1,6 @@
 package cn.ykf;
 
+import cn.ykf.thread.EchoHandler;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -71,6 +72,11 @@ public class SocketTest {
         }
     }
 
+    /**
+     * 只允许单个客户端连接
+     *
+     * @throws IOException
+     */
     @Test
     public void testServerSocket() throws IOException {
         // 监听8888端口
@@ -94,6 +100,25 @@ public class SocketTest {
                         out.println("Echo: " + line);
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * 允许多客户端连接
+     */
+    @Test
+    public void testServerSocketWithThread() throws IOException {
+        try (final ServerSocket serverSocket = new ServerSocket(8888)) {
+            // 计数器
+            int count = 0;
+
+            while (true) {
+                final Socket socket = serverSocket.accept();
+                System.out.println("第" + ++count + "个请求进入...");
+
+                // 开启线程处理
+                new Thread(new EchoHandler(socket)).start();
             }
         }
     }
