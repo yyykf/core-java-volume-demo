@@ -1,8 +1,11 @@
 package cn.ykf;
 
+import cn.ykf.frame.InterruptibleSocketFrame;
 import cn.ykf.thread.EchoHandler;
 import org.junit.Test;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -121,5 +124,47 @@ public class SocketTest {
                 new Thread(new EchoHandler(socket)).start();
             }
         }
+    }
+
+    /**
+     * 半关闭，先写后读
+     */
+    @Test
+    public void testHalfClosed() throws IOException {
+        try (final Socket socket = new Socket("localhost", 8888)) {
+            final Scanner in = new Scanner(socket.getInputStream(), "UTF-8");
+            final PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
+            // 先往服务端写点数据
+            out.println("1111111");
+            // 手动刷新
+            out.flush();
+            // 关闭输出流，此时处于半关闭状态
+            socket.shutdownOutput();
+
+            // 接收服务端响应
+            while (in.hasNextLine()) {
+                System.out.println(in.nextLine());
+            }
+        }
+    }
+
+
+    @Test
+    public void testInterruptSocket() {
+        EventQueue.invokeLater(() -> {
+            JFrame frame = new InterruptibleSocketFrame();
+            frame.setTitle("InterruptibleSocketTest");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setVisible(true);
+        });
+    }
+
+    public static void main(String[] args) {
+        EventQueue.invokeLater(() -> {
+            JFrame frame = new InterruptibleSocketFrame();
+            frame.setTitle("InterruptibleSocketTest");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setVisible(true);
+        });
     }
 }
