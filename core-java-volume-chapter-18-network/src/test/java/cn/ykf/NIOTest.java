@@ -7,8 +7,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 /**
  * @author YuKaiFan <1092882580@qq.com>
@@ -135,6 +138,31 @@ public class NIOTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 通过内存映射文件（直接缓冲区）复制文件
+     */
+    @Test
+    public void testMappedByteBuffer() {
+        try (final FileChannel in = FileChannel.open(Paths.get("nio.txt"), StandardOpenOption.READ);
+             final FileChannel out = FileChannel.open(Paths.get("new_dest.txt"), StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE)) {
+
+            // 内存映射文件
+            final MappedByteBuffer inBuffer = in.map(FileChannel.MapMode.READ_ONLY, 0, in.size());
+            final MappedByteBuffer outBuffer = out.map(FileChannel.MapMode.READ_WRITE, 0, in.size());
+
+            // 直接操作缓冲区即可，因为是直接缓冲区，处于物理内存上
+            final byte[] dst = new byte[inBuffer.limit()];
+            // 将数组读到byte数组中
+            inBuffer.get(dst);
+            // 把byte数组的数据写入缓冲区
+            outBuffer.put(dst);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
