@@ -166,7 +166,34 @@ public class NIOTest {
     }
 
     /**
+     * 分散读取和聚集写入
+     */
+    @Test
+    public void testScatterAndGather() {
+        try (final FileChannel in = new FileInputStream("nio.txt").getChannel();
+             final FileChannel out = new FileOutputStream("new_dest.txt", true).getChannel()) {
+            // 分配多个缓冲区
+            ByteBuffer[] buffers = {ByteBuffer.allocate(9), ByteBuffer.allocate(1024)};
+            // 分散读取
+            in.read(buffers);
+            // 处理缓冲区数据
+            for (ByteBuffer buffer : buffers) {
+                buffer.flip();
+            }
+            System.out.println(new String(buffers[0].array(), 0, buffers[0].limit()));
+            System.out.println("-----------");
+            System.out.println(new String(buffers[1].array(), 0, buffers[1].limit()));
+
+            // 聚集写入
+            out.write(buffers);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * 更好的方式是使用 transferTo() 或者 transferFrom()
+     * 也是通过直接缓冲区
      */
     @Test
     public void testTransfer() {
