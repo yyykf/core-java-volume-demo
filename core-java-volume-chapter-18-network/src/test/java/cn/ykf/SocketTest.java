@@ -148,23 +148,14 @@ public class SocketTest {
         }
     }
 
-
     @Test
-    public void testInterruptSocket() {
+    public void testInterruptSocket() throws InterruptedException {
         EventQueue.invokeLater(() -> {
             JFrame frame = new InterruptibleSocketFrame();
             frame.setTitle("InterruptibleSocketTest");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setVisible(true);
         });
-    }
-
-    public static void main(String[] args) {
-        EventQueue.invokeLater(() -> {
-            JFrame frame = new InterruptibleSocketFrame();
-            frame.setTitle("InterruptibleSocketTest");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setVisible(true);
-        });
+        Thread.currentThread().join();
     }
 }
