@@ -19,6 +19,7 @@
         <module>core-java-volume-chapter-16-io</module>
         <module>core-java-volume-chapter-18-network</module>
         <module>core-java-volume-chapter-14-concurrent</module>
+        <module>core-java-volume-chapter-20-anno</module>
     </modules>
 
     <!-- 仓库配置 -->
